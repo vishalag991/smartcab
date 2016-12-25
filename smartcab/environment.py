@@ -135,6 +135,7 @@ class Environment(object):
         positions = dict()
         for location in self.intersections:
             positions[location] = list()
+
             for heading in self.valid_headings:
                 positions[location].append(heading)
 
@@ -288,7 +289,7 @@ class Environment(object):
         # Create a penalty factor as a function of remaining deadline
         # Scales reward multiplicatively from [0, 1]
         fnc = self.t * 1.0 / (self.t + state['deadline']) if agent.primary_agent else 0.0
-        gradient = 10
+        gradient = 20 # VA Increased gradient/penalty to enforce deadline
         
         # No penalty given to an agent that has no enforced deadline
         penalty = 0
@@ -349,9 +350,9 @@ class Environment(object):
         # Agent attempted invalid move
         else:
             if violation == 1: # Minor violation
-                reward += -5
+                reward += -5 + penalty # VA - Decrease the -ve reward to enforce deadline
             elif violation == 2: # Major violation
-                reward += -10
+                reward += -10 + penalty # VA - Decrease the -ve reward to enforce deadline
             elif violation == 3: # Minor accident
                 reward += -20
             elif violation == 4: # Major accident
